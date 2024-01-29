@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch API</title>
+    <style>
+        
+        body {
+            padding: 5%;
+            margin: 0;
+            box-sizing: border-box;
+            height: 100dvh;
+        }
+        .fetch-container {
+            height: 20%;
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+            grid-gap: 25px;
+        }
+        .fetch-container > div {
+            display: grid;
+            place-items: center;
+            font-size: 5rem;
+            position: relative;
+        }
+        #myLocation {
+            width: 75%;
+            height: 80%;
+            font-size: 1.75rem;
+            text-align: center;
+            border-radius: 50px;
+            border: 2px solid black;
+            outline: none;
+        }
+        #btn {
+            width: 30%;
+            aspect-ratio: 2 / 0.8;
+            font-size: 1.75rem;
+            border-radius: 12px;
+            border: 2px solid black;
+        }
+        button:active {
+            background: #212121;
+            color: #ddd;
+        }
+        .paragraph-container {
+            font-size: 2.25rem;
+        }
+        
+    </style>
+</head>
+<body>
+    
+    <div class="fetch-container">
+        <div class="myInput">
+            <input type="text" id="myLocation" placeholder="Enter a city" />
+        </div>
+        <div class="myButton">
+            <button id="btn">Fetch</button>
+        </div>
+    </div>
+    
+    <div class="paragraph-container">
+        <p>Location: <span id="address"></span></p>
+        <p>Timezone: <span id="timezone"></span></p>
+        <p>Description: <span id="description"></span></p>
+        <p>Time (current hour): <span id="time"></span></p>
+        <p>Temperature: <span id="temperature"></span></p>
+        <p>Weather: <span id="weather"></span></p>
+    </div> 
+     
+</body>
+<script>
+    
+    const myLocation = document.querySelector("#myLocation");
+    const btn = document.querySelector("#btn");
+    
+    const address = document.querySelector("#address");
+    const timezone = document.querySelector("#timezone");
+    const description = document.querySelector("#description");
+    const time = document.querySelector("#time");
+    const temperature = document.querySelector("#temperature");
+    const weather = document.querySelector("#weather");
+    
+    const err = document.querySelector("#error");
+    
+    btn.addEventListener("click", function() {
+        fetchWeather(myLocation.value);
+    })
+    
+    function fetchWeather(loc) {
+        const url = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${loc}?unitGroup=metric&key=DF5AEMV294CQ6YPT9Y23H3J4P&contentType=json`;
+        (async function getWeather() {
+            try {
+                const response = await fetch(url);
+                if (response.status === 200) {
+                    const data = await response.json();
+                    const d = new Date();
+                    const hour = d.getHours();
+                
+                    address.innerText = `${data.resolvedAddress}`;
+                    timezone.innerText = `${data.timezone}`;
+                    description.innerText = `${data.description}`;
+                    time.innerText = `${data.days[0].hours[hour].datetime}`;
+                    temperature.innerText = `${data.days[0].hours[hour].temp}°C`;
+                    weather.innerText = `${data.days[0].hours[hour].conditions}`;
+                } else {
+                    alert(`${response.status} not found`); 
+                }
+            } catch (error) {
+                alert(`${error}`);
+            }
+        }) ();
+    } 
+    
+</script>
+</html>
